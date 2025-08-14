@@ -39,6 +39,17 @@ class FilterNotifier extends StateNotifier<FilterState> {
   void toggleOverdue() {
     state = state.copyWith(showOverdue: !state.showOverdue);
   }
+  void setShowCompleted(bool value) {
+    state = state.copyWith(showCompleted: value);
+  }
+
+  void setShowOverdue(bool value) {
+    state = state.copyWith(showOverdue: value);
+  }
+  void resetAll() {
+    state = FilterState();
+  }
+
 }
 
 final filterProvider =
