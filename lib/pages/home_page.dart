@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/filtered_task_provider.dart';
 import '../providers/task_provider.dart';
 import '../providers/filter_provider.dart';
 import '../widgets/task_card.dart';
@@ -22,19 +23,12 @@ class _HomePageState extends ConsumerState<HomePage> {
     final tasks = ref.watch(taskProvider);
     final filter = ref.watch(filterProvider);
 
-    // Apply filters
-    final filteredTasks = tasks.where((task) {
-      bool matchesCategory =
-          filter.category == null || task.category == filter.category;
-      bool matchesCompleted =
-          !filter.showCompleted || task.isCompleted; // show completed if toggled
-      bool matchesOverdue =
-          !filter.showOverdue || task.isOverdue; // show overdue if toggled
-      return matchesCategory && matchesCompleted && matchesOverdue;
-    }).toList();
+    final filteredTasks = ref.watch(filteredTasksProvider);
+
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.tealAccent,
         title: const Text('Tasks'),
         actions: [
           IconButton(
@@ -43,21 +37,23 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          FilterChips(),
-          Expanded(
-            child: isCalendarView
-                ? CalendarWidget(tasks: filteredTasks)
-                : ListView.builder(
-              itemCount: filteredTasks.length,
-              itemBuilder: (context, index) {
-                final task = filteredTasks[index];
-                return TaskCard(task: task);
-              },
+      body: SafeArea(
+        child: Column(
+          children: [
+            FilterChips(),
+            Expanded(
+              child: isCalendarView
+                  ? CalendarWidget(tasks: filteredTasks)
+                  : ListView.builder(
+                itemCount: filteredTasks.length,
+                itemBuilder: (context, index) {
+                  final task = filteredTasks[index];
+                  return TaskCard(task: task);
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
