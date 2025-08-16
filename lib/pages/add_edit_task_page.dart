@@ -78,11 +78,19 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // For now just pop
-                  Navigator.pop(context);
+                  final newTask = TaskModel(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: titleController.text,
+                    description: descController.text,
+                    deadline: selectedDate!,
+                    category: selectedCategory!,
+                    isCompleted: false,
+                  );
+
+                  Navigator.pop(context, newTask);
                 },
-                child: const Text('Save'),
-              )
+                child: const Text("Save Task"),
+              ),
             ],
           ),
         ),
