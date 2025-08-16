@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/filtered_task_provider.dart';
 import '../providers/task_provider.dart';
-import '../providers/filter_provider.dart';
 import '../widgets/task_card.dart';
 import '../widgets/filter_chips.dart';
 import '../widgets/calendar_widget.dart';
@@ -20,19 +19,30 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final tasks = ref.watch(taskProvider);
-    final filter = ref.watch(filterProvider);
-
     final filteredTasks = ref.watch(filteredTasksProvider);
-
 
     return Scaffold(
       appBar: AppBar(
+        title: const Text(
+          'Tasks',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.black87,
+          ),
+        ),
         backgroundColor: Colors.tealAccent,
-        title: const Text('Tasks'),
+        elevation: 0,
+        centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(16),
+          ),
+        ),
         actions: [
           IconButton(
             icon: Icon(isCalendarView ? Icons.list : Icons.calendar_month),
+            color: Colors.black87,
             onPressed: () => setState(() => isCalendarView = !isCalendarView),
           ),
         ],
@@ -40,7 +50,24 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-            FilterChips(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 6,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: FilterChips()
+              ),
+            ),
             Expanded(
               child: isCalendarView
                   ? CalendarWidget(tasks: filteredTasks)
@@ -56,13 +83,17 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final newTask = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => const AddEditTaskPage(task: null),
             ),
           );
+
+          if (newTask != null) {
+            ref.read(taskProvider.notifier).addTask(newTask);
+          }
         },
         child: const Icon(Icons.add),
       ),
