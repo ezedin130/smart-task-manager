@@ -7,38 +7,77 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        color: task.isOverdue ? Colors.red[50] : Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+    final deadlineText = "${task.deadline.day}/${task.deadline.month}";
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: LinearGradient(
+          colors: task.isCompleted
+              ? [Colors.green.shade50, Colors.green.shade100]
+              : task.isOverdue
+              ? [Colors.red.shade50, Colors.red.shade100]
+              : [Colors.blue.shade50, Colors.blue.shade100],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      elevation: 4,
-      child: ListTile(
-        leading: Icon(
-          task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
-          color: task.isCompleted ? Colors.green : Colors.grey,
-        ),
-        title: Text(
-          task.title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            decoration: task.isCompleted
-                ? TextDecoration.lineThrough
-                : TextDecoration.none,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 🔹 Title
+          Text(
+            task.title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
           ),
-        ),
-        subtitle: Text(
-          task.description,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: Text(
-          "${task.deadline.day}/${task.deadline.month}",
-          style: TextStyle(
-            color: task.isOverdue ? Colors.red : Colors.black54,
+
+          const SizedBox(height: 6),
+
+          // 🔹 Description
+          Text(
+            task.description,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[700],
+            ),
           ),
-        ),
+
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // 📅 Deadline
+              Row(
+                children: [
+                  const Icon(Icons.calendar_today, size: 16, color: Colors.black54),
+                  const SizedBox(width: 6),
+                  Text(
+                    deadlineText,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
