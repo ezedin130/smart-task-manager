@@ -19,7 +19,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredTasks = ref.watch(filteredTasksProvider);
+    var filteredTasks = ref.watch(filteredTasksProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -70,7 +70,35 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             Expanded(
               child: isCalendarView
-                  ? CalendarWidget(tasks: filteredTasks)
+                  ? Column(
+                children: [
+                  SizedBox(
+                    height: 100,
+                    child: DaySelector(
+                      tasks: filteredTasks,
+                      onDaySelected: (selectedDay) {
+                        setState(() {
+                          filteredTasks = ref.watch(taskProvider)
+                              .where((t) =>
+                          t.deadline.year == selectedDay.year &&
+                              t.deadline.month == selectedDay.month &&
+                              t.deadline.day == selectedDay.day)
+                              .toList();
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: filteredTasks.length,
+                      itemBuilder: (context, index) {
+                        final task = filteredTasks[index];
+                        return TaskCard(task: task);
+                      },
+                    ),
+                  ),
+                ],
+              )
                   : ListView.builder(
                 itemCount: filteredTasks.length,
                 itemBuilder: (context, index) {
@@ -78,7 +106,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                   return TaskCard(task: task);
                 },
               ),
-            ),
+            )
+
           ],
         ),
       ),
